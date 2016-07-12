@@ -11,7 +11,7 @@ window.addEventListener("load",function(){
     canvas.height = window.innerHeight;;
   }
 
-  window.addEventListener("resize", resizeCanvas, false);
+  window.addEventListener("resize", resizeCanvas);
   resizeCanvas();
 
   key = [];
@@ -97,23 +97,49 @@ var Player = function() {
 
 var Enemy = function() {
   var self = this;
+  var last_clicked = 0;
   this.x = 1200;
   this.y = 300;
   this.width = 80;
   this.height = 100;
   this.health = 50;
+  this.click = true;
+  this.delay = 5000;
+  this.death = false;
   this.render = function() {
     ctx.fillStyle = "blue";
     ctx.fillRect(this.x, this.y, this.width, this.height);
     ctx.font = "30px Arial";
     ctx.fillText(this.health,(this.x + (this.width / 4)),this.y);
+
+    ctx.fillStyle = "black";
+    ctx.font = "30px Arial";
+    ctx.fillText((self.delay / 1000) + " second before next attack",100,100);
   }
   this.update = function() {
-    if (this.health <= 0) {
-      this.health = 0;
+  }
+
+  setInterval(function(){
+    if (self.delay == 0 && !self.death) {
+      self.delay = 0;
+      self.delay += 5000;
+    } else {
+      self.delay -= 1000;
+    }
+
+
+  }, 1000)
+
+  window.onclick = function(){
+    if (Date.now() - last_clicked < 5000) return;
+    console.log(last_clicked);
+    last_clicked = Date.now();
+    // Here You should put the listener code
+    if (self.health <= 0) {
+      self.health = 0;
+      self.death = true;
+    } else {
+      self.health -= 10;
     }
   }
-  window.addEventListener("click", function(e){
-    self.health -= 10;
-  });
 }

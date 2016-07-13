@@ -1,8 +1,10 @@
 canvas {
   position: absolute;
-  margin-left: 0px;
+  margin-left: -8px;
   margin-top: -8px;
-  background-color:pink;
+  background-image: url("background.jpg");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
 }
 
 html, body {

@@ -35,45 +35,33 @@ window.addEventListener("load",function(){
   W_UpKey = 87;
   D_RightKey = 68;
 
-  var knight = new Player();
-  var swine = new Enemy();
+  var knight = new Component(300, 768, 80, 100, "red", 100, 10, 5, true);
+  var swine = new Component(1300, 768, 80, 100, "blue", 50, 20, 0, false);
 
   function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    knight.render();
     knight.update()
+    knight.draw();
 
-    swine.render();
     swine.update();
+    swine.draw();
   }
   setInterval(animate, 10);
 });
 
 
 
-function Component() {
+function Component(x, y, width, height, color, health, attack, speed, useKeys) {
+  var self = this;
   this.x = x;
   this.y = y;
   this.width = width;
   this.height = height;
-}
-
-var Player = function() {
-  var self = this;
-  this.x = 300;
-  this.y = 768;
-  this.width = 80;
-  this.height = 100;
-  this.health = 100;
-  this.attack = 10;
-  this.speed = 5;
-  this.render = function() {
-    ctx.fillStyle = "red";
-    ctx.fillRect(this.x, this.y, this.width, this.height);
-    ctx.font = "30px Arial";
-    ctx.fillText(this.health,(this.x + (this.width / 4)),this.y);
-    self.healthBar((this.x + (this.width + 20)),this.y - 30, self.health, 300, 10);
-  }
+  this.color = color;
+  this.health = health;
+  this.attack = attack;
+  this.speed = speed;
+  this.useKeys = useKeys;
   this.update = function() {
     if (this.x < 0) {
       this.x = 0;
@@ -87,83 +75,54 @@ var Player = function() {
     if (this.y > (canvas.height - this.height)) {
       this.y = canvas.height - this.height;
     }
-    this.Keys = function() {
 
-      if (key[A_LeftKey] || key[LeftKey]) {
-        this.x -= this.speed;
+    this.Keys = function() {
+      if (this.useKeys == true) {
+        if (key[A_LeftKey] || key[LeftKey]) {
+          this.x -= this.speed;
+        }
+        if (key[D_RightKey] || key[RightKey]) {
+          this.x += this.speed;
+        }
       }
-      if (key[D_RightKey] || key[RightKey]) {
-        this.x += this.speed;
-      }
-      /*
-      if (key[W_UpKey] || key[UpKey]) {
-        this.y -= this.speed;
-      }
-      if (key[S_DownKey] || key[DownKey]) {
-        this.y += this.speed;
-      }
-      */
     }
     this.Keys();
-  }
-  this.healthBar = function(x, y, per, width, thickness) {
-      ctx.beginPath();
-      ctx.rect(x-width/2, y, width*(per/100), thickness)
-      if(per > 43){
-          ctx.fillStyle="green"
-      }else if(per > 27){
-        ctx.fillStyle="orange";
-      }else{
-        ctx.fillStyle="red";
-      }
-      ctx.font = "30px Arial";
-      ctx.fillText(this.health,(this.x + (this.width + 20)),this.y - 30);
-      ctx.closePath();
-      ctx.fill();
-  }
 
-}
-
-var Enemy = function() {
-  var self = this;
-  this.x = 1200;
-  this.y = 768;
-  this.width = 80;
-  this.height = 100;
-  this.health = 50;
-  this.render = function() {
-    ctx.fillStyle = "blue";
+  }
+  this.draw = function() {
+    ctx.fillStyle = this.color;
     ctx.fillRect(this.x, this.y, this.width, this.height);
-    self.healthBar((this.x + (this.width + 20)),this.y - 30, self.health, 300, 10);
+    this.healthBar(this.health);
   }
-  this.update = function() {
 
-  }
-  this.healthBar = function(x, y, per, width, thickness) {
+  this.healthBar = function(health) {
       ctx.beginPath();
-      ctx.rect(x-width/2, y, width*(per/100), thickness)
-      if(per > 43){
-          ctx.fillStyle="green"
-      }else if(per > 27){
-        ctx.fillStyle="orange";
+      x = this.x;
+      y = this.y - 60;
+      health = this.health;
+      width = this.health * 2;
+      thickness = 15;
+      ctx.rect(x, y, width, thickness)
+      if(health > 43){
+          ctx.fillStyle = "green"
+      }else if(health > 27){
+        ctx.fillStyle = "orange";
       }else{
         ctx.fillStyle="red";
       }
-      ctx.font = "30px Arial";
-      ctx.fillText(this.health,(this.x + (this.width + 20)),this.y - 30);
       ctx.closePath();
       ctx.fill();
   }
 
-  window.onclick = function(e){
-    if (e.button == 0) {
-      self.health -= 10;
-      if (self.health <= 0) {
-        self.health = 0;
-        setTimeout(function(){
-          alert("Enemy Dead");
-        }, 60)
+    window.onclick = function(e){
+      if (e.button == 0) {
+        self.health -= 10;
+        if (self.health <= 0) {
+          self.health = 0;
+          setTimeout(function(){
+            alert("Enemy Dead");
+          }, 60)
+        }
       }
     }
-  }
 }

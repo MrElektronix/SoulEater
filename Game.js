@@ -49,9 +49,19 @@ window.addEventListener("load",function(){
   setInterval(animate, 10);
 });
 
+
+
+function Component() {
+  this.x = x;
+  this.y = y;
+  this.width = width;
+  this.height = height;
+}
+
 var Player = function() {
+  var self = this;
   this.x = 300;
-  this.y = 300;
+  this.y = 768;
   this.width = 80;
   this.height = 100;
   this.health = 100;
@@ -62,6 +72,7 @@ var Player = function() {
     ctx.fillRect(this.x, this.y, this.width, this.height);
     ctx.font = "30px Arial";
     ctx.fillText(this.health,(this.x + (this.width / 4)),this.y);
+    self.healthBar((this.x + (this.width + 20)),this.y - 30, self.health, 300, 10);
   }
   this.update = function() {
     if (this.x < 0) {
@@ -84,62 +95,75 @@ var Player = function() {
       if (key[D_RightKey] || key[RightKey]) {
         this.x += this.speed;
       }
+      /*
       if (key[W_UpKey] || key[UpKey]) {
         this.y -= this.speed;
       }
       if (key[S_DownKey] || key[DownKey]) {
         this.y += this.speed;
       }
+      */
     }
     this.Keys();
   }
+  this.healthBar = function(x, y, per, width, thickness) {
+      ctx.beginPath();
+      ctx.rect(x-width/2, y, width*(per/100), thickness)
+      if(per > 43){
+          ctx.fillStyle="green"
+      }else if(per > 27){
+        ctx.fillStyle="orange";
+      }else{
+        ctx.fillStyle="red";
+      }
+      ctx.font = "30px Arial";
+      ctx.fillText(this.health,(this.x + (this.width + 20)),this.y - 30);
+      ctx.closePath();
+      ctx.fill();
+  }
+
 }
 
 var Enemy = function() {
   var self = this;
-  var last_clicked = 0;
   this.x = 1200;
-  this.y = 300;
+  this.y = 768;
   this.width = 80;
   this.height = 100;
   this.health = 50;
-  this.click = true;
-  this.delay = 5000;
-  this.death = false;
   this.render = function() {
     ctx.fillStyle = "blue";
     ctx.fillRect(this.x, this.y, this.width, this.height);
-    ctx.font = "30px Arial";
-    ctx.fillText(this.health,(this.x + (this.width / 4)),this.y);
-
-    ctx.fillStyle = "black";
-    ctx.font = "30px Arial";
-    ctx.fillText((self.delay / 1000) + " second before next attack",100,100);
+    self.healthBar((this.x + (this.width + 20)),this.y - 30, self.health, 300, 10);
   }
   this.update = function() {
+
+  }
+  this.healthBar = function(x, y, per, width, thickness) {
+      ctx.beginPath();
+      ctx.rect(x-width/2, y, width*(per/100), thickness)
+      if(per > 43){
+          ctx.fillStyle="green"
+      }else if(per > 27){
+        ctx.fillStyle="orange";
+      }else{
+        ctx.fillStyle="red";
+      }
+      ctx.font = "30px Arial";
+      ctx.fillText(this.health,(this.x + (this.width + 20)),this.y - 30);
+      ctx.closePath();
+      ctx.fill();
   }
 
-  setInterval(function(){
-    if (self.delay == 0 && !self.death) {
-      self.delay = 0;
-      self.delay += 5000;
-    } else {
-      self.delay -= 1000;
-    }
-
-
-  }, 1000)
-
-  window.onclick = function(){
-    if (Date.now() - last_clicked < 5000) return;
-    console.log(last_clicked);
-    last_clicked = Date.now();
-    // Here You should put the listener code
-    if (self.health <= 0) {
-      self.health = 0;
-      self.death = true;
-    } else {
+  window.onclick = function(e){
+    if (e.button == 0) {
       self.health -= 10;
+      if (self.health <= 0) {
+        self.health = 0;
+        setTimeout(function(){
+          alert("Enemy Dead");
+        }, 60)
+      }
     }
   }
 }

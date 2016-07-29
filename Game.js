@@ -1,21 +1,30 @@
-
 window.addEventListener("load", function(){
   StartGame();
+  function resizeCanvas() {
+    Game.canvas.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    Game.canvas.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+  }
+  resizeCanvas();
+  window.addEventListener("resize", resizeCanvas);
 });
 
 var Knight, Swine;
+var Enemy = [];
 
 function StartGame() {
   Game.start();
   Knight = new Component(50, (Game.canvas.height - 200), 100, 100, "black", 5, 100, 5,"Player");
-  Swine = new Component((Game.canvas.width - 400), (Game.canvas.height - 200), 100, 100, "green", 5, 50, 15,"Enemy");
+  Enemy_Amount = 10;
+  for (var i = 0; i < Enemy_Amount; i++) {
+    Enemy.push(new Component(Math.floor(Math.random()*(Game.canvas.width)+300), (Game.canvas.height - 200), 100, 100, "green", 5, 50, 15,"Enemy"));
+  }
 }
 
 var Game = {
   canvas: document.createElement("canvas"),
   start: function() {
-    this.canvas.width = 1200;
-    this.canvas.height = 800;
+    this.canvas.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;;
+    this.canvas.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;;
     this.ctx = this.canvas.getContext("2d");
     document.body.insertBefore(this.canvas, document.body.childNodes[0]);
     this.interval = setInterval(UpdateGame, 10);
@@ -29,13 +38,13 @@ var Game = {
     });
 
     LeftKey = 37;
-    //UpKey = 38;
+    UpKey = 38;
     RightKey = 39;
-    //DownKey = 40;
+    DownKey = 40;
 
     A_LeftKey = 65;
-    //S_DownKey = 83;
-    //W_UpKey = 87;
+    S_DownKey = 83;
+    W_UpKey = 87;
     D_RightKey = 68;
   },
   clear: function() {
@@ -94,17 +103,17 @@ function Component(xpos, ypos, width, height, color, speed, health, attack, type
       ctx.font = "30px Arial";
       x = this.x;
       y = this.y - 60;
-      health = this.health;
-      width = this.health * 2;
+      health_text = this.health;
+      health_bar = this.health;
       thickness = 15;
       ctx.lineWidth = 3;
       ctx.fillStyle = "black";
-      ctx.fillText(health,x, y-10);
-      ctx.strokeRect(x, y, width, thickness);
-      ctx.rect(x, y, width, thickness)
-      if(health > 43){
+      ctx.fillText(health_text,x, y-10);
+      ctx.strokeRect(x, y, health_bar, thickness);
+      ctx.rect(x, y, health_bar, thickness)
+      if(health_text > 43){
           ctx.fillStyle = "green"
-      } else if(health > 27){
+      } else if(health_text > 27){
         ctx.fillStyle = "orange";
       } else{
         ctx.fillStyle = "red";
@@ -115,10 +124,8 @@ function Component(xpos, ypos, width, height, color, speed, health, attack, type
 }
 
 window.onclick = function(target){
-  target = Swine;
-  console.log("hi");
-  target.health -= 10;
-  console.log(target.health);
+  target = Enemy;
+  target.health -= Knight.attack;
   if (target.health <= 0) {
     target.health = 0;
     setTimeout(function(){
@@ -128,9 +135,15 @@ window.onclick = function(target){
 }
 
 
-Component.prototype.keys = function() {
+Component.prototype.keys = function() {;
+    if (key[W_UpKey] || key[UpKey]) {
+      this.y -= this.speed;
+    }
     if (key[A_LeftKey] || key[LeftKey]) {
       this.x -= this.speed;
+    }
+    if (key[S_DownKey] || key[DownKey]) {
+      this.y += this.speed;
     }
     if (key[D_RightKey] || key[RightKey]) {
       this.x += this.speed;
@@ -141,22 +154,13 @@ function UpdateGame() {
   Game.clear();
   Knight.keys();
   Knight.update();
-  Swine.update();
+  //Swine.update();
 
   Knight.draw();
-  Swine.draw();
-}
+  //Swine.draw();
 
-
-/*
-  canvas.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-  canvas.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-
-  function resizeCanvas() {
-    canvas.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    canvas.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+  for (i = 0; i < Enemy.length; i++) {
+      Enemy[i].draw();
+      Enemy[i].update();
   }
-
-  window.addEventListener("resize", resizeCanvas);
-  resizeCanvas();
-*/
+}

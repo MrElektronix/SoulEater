@@ -5,9 +5,10 @@ canvas {
   background-image: url("background.jpg");
   background-repeat: no-repeat;
   background-size: 100% 100%;
+  margin: 0 auto;
 }
 
 html, body {
   width: 100%;
-  height:100%
+  height:100%;
 }

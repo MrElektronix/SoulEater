@@ -10,10 +10,12 @@ window.addEventListener("load", function(){
 
 var Knight, Swine;
 var Enemy = [];
+var j = 0;
 
 function StartGame() {
   Game.start();
   Knight = new Component(50, (Game.canvas.height - 200), 100, 100, "black", 5, 100, 5,"Player");
+  //Swine = new Component(600, (Game.canvas.height - 200), 100, 100, "green", 5, 50, 15,"Enemy"))
   Enemy_Amount = 10;
   for (var i = 0; i < Enemy_Amount; i++) {
     Enemy.push(new Component(Math.floor(Math.random()*(Game.canvas.width)+300), (Game.canvas.height - 200), 100, 100, "green", 5, 50, 15,"Enemy"));
@@ -123,16 +125,16 @@ function Component(xpos, ypos, width, height, color, speed, health, attack, type
   }
 }
 
-window.onclick = function(target){
-  target = Enemy;
-  target.health -= Knight.attack;
-  if (target.health <= 0) {
-    target.health = 0;
-    setTimeout(function(){
-    alert("Enemy Dead");
-    }, 60)
+window.onclick = function(){
+  Enemy[j].health -= Knight.attack;
+  if (Enemy[j].health <= 0) {
+    Enemy[j].health = 0;
+    console.log("Enemy is dead");
+      j++;
   }
-}
+  console.log(i);
+  }
+
 
 
 Component.prototype.keys = function() {;
@@ -159,8 +161,8 @@ function UpdateGame() {
   Knight.draw();
   //Swine.draw();
 
-  for (i = 0; i < Enemy.length; i++) {
-      Enemy[i].draw();
-      Enemy[i].update();
-  }
+  Enemy[j].draw();
+  Enemy[j].update();
+
+
 }

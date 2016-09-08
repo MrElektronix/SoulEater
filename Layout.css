@@ -2,9 +2,7 @@
 
 canvas {
   display: block;
-  background-image: url("Pink_background.jpg");
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
+  background-color:	#778899;
   margin: 0 auto;
 }
 
